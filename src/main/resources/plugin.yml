@@ -1,0 +1,15 @@
+name: CustomEnchantments
+version: ${project.version}
+main: me.sasukector.custom_enchantments.CustomEnchantments
+api-version: 1.16
+authors: [ Sasukector ]
+description: This is the compilation of my custom enchantments
+website: https://hectorrdz.com
+commands:
+  Telepathy:
+    description: Get Telepathy pickaxe
+    usage: /<command>
+  Telepathy_book:
+    description: Get Telepathy book
+    usage: /<command>
+
