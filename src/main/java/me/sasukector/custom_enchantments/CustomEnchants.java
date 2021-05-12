@@ -54,6 +54,7 @@ public class CustomEnchants implements Listener {
         }
     }
 
+    // Get a list with the custom enchantments of an item
     public List<Enchantment> getCustomEnchantments(ItemStack item) {
         List<Enchantment> itemCustomEnc = new ArrayList<Enchantment>();
         if (item.hasItemMeta() && item.getItemMeta().hasLore()) {
@@ -69,6 +70,7 @@ public class CustomEnchants implements Listener {
         return itemCustomEnc;
     }
 
+    // Get a list with all the extra lore of an item
     public List<String> getLoreWithNoCustomEnchantments(List<String> originalLore, List<Enchantment> originalCustomEnc) {
         List<String> newLore = new ArrayList<>();
         for (String lore : originalLore) {
