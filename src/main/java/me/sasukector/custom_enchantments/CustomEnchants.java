@@ -94,7 +94,7 @@ public class CustomEnchants implements Listener {
         ItemStack secondItem = anvil.getSecondItem();
         ItemStack resultItem = anvil.getResult() != null ?  anvil.getResult().clone() : null;
 
-        if (firstItem == null || secondItem == null || resultItem == null)
+        if (firstItem == null || secondItem == null)
             return;
 
         // Get the custom enchantments of the items
@@ -107,48 +107,133 @@ public class CustomEnchants implements Listener {
             firstExtraLore = getLoreWithNoCustomEnchantments(firstItem.getItemMeta().getLore(), firstItemCustomEnc);
         }
 
-        // Apply custom enchantments to result item
-        if (resultItem.hasItemMeta()) {
-            ItemMeta resultMeta = resultItem.getItemMeta();
-            List<String> resultLore = new ArrayList<String>();
+        // If it's a valid enchantment
+        if (resultItem != null) {
+            // Apply custom enchantments to result item
+            if (resultItem.hasItemMeta()) {
+                ItemMeta resultMeta = resultItem.getItemMeta();
+                List<String> resultLore = new ArrayList<String>();
 
-            // Add custom enchantments lore to item
-            for (Enchantment firstEnc : firstItemCustomEnc) {
-                if (secondItemCustomEnc.contains(firstEnc)) {
-                    // If mixing same custom enchantment
-                } else {
-                    resultLore.add(ChatColor.GOLD + firstEnc.getName());
+                // Add custom enchantments lore to item
+                for (Enchantment firstEnc : firstItemCustomEnc) {
+                    if (secondItemCustomEnc.contains(firstEnc)) {
+                        // If mixing same custom enchantment
+                    } else {
+                        resultLore.add(ChatColor.GOLD + firstEnc.getName());
+                    }
+                }
+                for (Enchantment secondEnc : secondItemCustomEnc) {
+                    if (!firstItemCustomEnc.contains(secondEnc)) {
+                        resultLore.add(ChatColor.GOLD + secondEnc.getName());
+                    }
+                }
+
+                // Add extra lore to item
+                for (String l : firstExtraLore)
+                    resultLore.add(l);
+                resultMeta.setLore(resultLore);
+                resultItem.setItemMeta(resultMeta);
+
+                // Add custom enchantments to item
+                for (Enchantment firstEnc : firstItemCustomEnc) {
+                    if (secondItemCustomEnc.contains(firstEnc)) {
+                        // If mixing same custom enchantment
+                    } else {
+                        resultItem.addUnsafeEnchantment(firstEnc, firstEnc.getStartLevel());
+                    }
+                }
+                for (Enchantment secondEnc : secondItemCustomEnc) {
+                    if (!firstItemCustomEnc.contains(secondEnc)) {
+                        resultItem.addUnsafeEnchantment(secondEnc, secondEnc.getStartLevel());
+                    }
+                }
+
+                // Save new result item
+                event.setResult(resultItem);
+            }
+
+        // If it's not a valid enchantment
+        } else {
+            // If it's a book
+            if (secondItem.getType() == Material.ENCHANTED_BOOK) {
+                // List of all the valid enchantments
+                List<Enchantment> validEnchantments = new ArrayList<>();
+
+                // Add enchantments just to a valid type item
+                for (Enchantment enc : secondItemCustomEnc) {
+                    if (enc.getItemTarget().includes(firstItem)) {
+                        validEnchantments.add(enc);
+                    }
+                }
+
+                // If there're valid enchantments
+                if (validEnchantments.size() > 0) {
+                    // Clone first item
+                    resultItem = firstItem.clone();
+                    // Has meta
+                    if (resultItem.hasItemMeta()) {
+                        ItemMeta resultMeta = resultItem.getItemMeta();
+                        List<String> resultLore = new ArrayList<String>();
+
+                        // Add custom enchantments lore to item
+                        for (Enchantment firstEnc : firstItemCustomEnc) {
+                            if (validEnchantments.contains(firstEnc)) {
+                                // If mixing same custom enchantment
+                            } else {
+                                resultLore.add(ChatColor.GOLD + firstEnc.getName());
+                            }
+                        }
+                        for (Enchantment secondEnc : validEnchantments) {
+                            if (!firstItemCustomEnc.contains(secondEnc)) {
+                                resultLore.add(ChatColor.GOLD + secondEnc.getName());
+                            }
+                        }
+
+                        // Add extra lore to item
+                        for (String l : firstExtraLore)
+                            resultLore.add(l);
+                        resultMeta.setLore(resultLore);
+                        resultItem.setItemMeta(resultMeta);
+
+                        // Add custom enchantments to item
+                        for (Enchantment firstEnc : firstItemCustomEnc) {
+                            if (validEnchantments.contains(firstEnc)) {
+                                // If mixing same custom enchantment
+                            } else {
+                                resultItem.addUnsafeEnchantment(firstEnc, firstEnc.getStartLevel());
+                            }
+                        }
+                        for (Enchantment secondEnc : validEnchantments) {
+                            if (!firstItemCustomEnc.contains(secondEnc)) {
+                                resultItem.addUnsafeEnchantment(secondEnc, secondEnc.getStartLevel());
+                            }
+                        }
+                    // Doesn't have meta
+                    } else {
+                        ItemMeta resultMeta = resultItem.getItemMeta();
+                        List<String> resultLore = new ArrayList<String>();
+
+                        for (Enchantment secondEnc : validEnchantments) {
+                            resultLore.add(ChatColor.GOLD + secondEnc.getName());
+                        }
+
+                        resultMeta.setLore(resultLore);
+                        resultItem.setItemMeta(resultMeta);
+
+                        // Add custom enchantments to item
+                        for (Enchantment secondEnc : validEnchantments) {
+                            resultItem.addUnsafeEnchantment(secondEnc, secondEnc.getStartLevel());
+                        }
+                    }
+
+                    // Save new result item
+                    event.setResult(resultItem);
+                    anvil.setRepairCost(5);
                 }
             }
-            for (Enchantment secondEnc : secondItemCustomEnc) {
-                if (!firstItemCustomEnc.contains(secondEnc)) {
-                    resultLore.add(ChatColor.GOLD + secondEnc.getName());
-                }
-            }
-
-            // Add extra lore to item
-            for (String l : firstExtraLore)
-                resultLore.add(l);
-            resultMeta.setLore(resultLore);
-            resultItem.setItemMeta(resultMeta);
-
-            // Add custom enchantments to item
-            for (Enchantment firstEnc : firstItemCustomEnc) {
-                if (secondItemCustomEnc.contains(firstEnc)) {
-                    // If mixing same custom enchantment
-                } else {
-                    resultItem.addUnsafeEnchantment(firstEnc, firstEnc.getStartLevel());
-                }
-            }
-            for (Enchantment secondEnc : secondItemCustomEnc) {
-                if (!firstItemCustomEnc.contains(secondEnc)) {
-                    resultItem.addUnsafeEnchantment(secondEnc, secondEnc.getStartLevel());
-                }
-            }
-
-            // Save new result item
-            event.setResult(resultItem);
         }
+
+
     }
 
     @EventHandler()

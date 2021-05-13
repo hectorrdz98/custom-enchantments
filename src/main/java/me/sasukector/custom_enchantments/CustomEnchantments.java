@@ -8,6 +8,7 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -36,21 +37,24 @@ public final class CustomEnchantments extends JavaPlugin implements Listener {
                 return true;
             Player player = (Player) sender;
 
-            ItemStack item = new ItemStack(Material.DIAMOND_PICKAXE);
-            item.addUnsafeEnchantment(CustomEnchants.TELEPATHY, 1);
-            item.addUnsafeEnchantment(Enchantment.DIG_SPEED, 5);
-            item.addUnsafeEnchantment(Enchantment.DURABILITY, 3);
+            if (player.isOp()) {
+                ItemStack item = new ItemStack(Material.DIAMOND_PICKAXE);
+                item.addUnsafeEnchantment(CustomEnchants.TELEPATHY, 1);
+                item.addUnsafeEnchantment(Enchantment.DIG_SPEED, 5);
+                item.addUnsafeEnchantment(Enchantment.DURABILITY, 3);
 
-            ItemMeta meta = item.getItemMeta();
-            List<String> lore = new ArrayList<String>();
-            lore.add(ChatColor.GOLD + "Telepathy");
-            if (meta.hasLore())
-                for (String l : meta.getLore())
-                    lore.add(l);
-            meta.setLore(lore);
-            item.setItemMeta(meta);
+                ItemMeta meta = item.getItemMeta();
+                List<String> lore = new ArrayList<String>();
+                lore.add(ChatColor.GOLD + "Telepathy");
+                if (meta.hasLore())
+                    for (String l : meta.getLore())
+                        lore.add(l);
+                meta.setLore(lore);
+                item.setItemMeta(meta);
 
-            player.getInventory().addItem(item);
+                player.getInventory().addItem(item);
+            }
+
             return true;
         }
 
@@ -59,16 +63,19 @@ public final class CustomEnchantments extends JavaPlugin implements Listener {
                 return true;
             Player player = (Player) sender;
 
-            ItemStack item = new ItemStack(Material.ENCHANTED_BOOK);
-            item.addUnsafeEnchantment(CustomEnchants.TELEPATHY, 1);
+            if (player.isOp()) {
+                ItemStack item = new ItemStack(Material.ENCHANTED_BOOK);
+                ItemMeta meta = item.getItemMeta();
+                EnchantmentStorageMeta emeta = (EnchantmentStorageMeta) item.getItemMeta();
+                emeta.addStoredEnchant(CustomEnchants.TELEPATHY, 1, false);
+                List<String> lore = new ArrayList<String>();
+                lore.add(ChatColor.GOLD + "Telepathy");
+                meta.setLore(lore);
+                item.setItemMeta(meta);
 
-            ItemMeta meta = item.getItemMeta();
-            List<String> lore = new ArrayList<String>();
-            lore.add(ChatColor.GOLD + "Telepathy");
-            meta.setLore(lore);
-            item.setItemMeta(meta);
+                player.getInventory().addItem(item);
+            }
 
-            player.getInventory().addItem(item);
             return true;
         }
 
