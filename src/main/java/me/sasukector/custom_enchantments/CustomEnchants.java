@@ -100,9 +100,9 @@ public class CustomEnchants implements Listener {
         // Get the custom enchantments of the items
         List<Enchantment> firstItemCustomEnc = getCustomEnchantments(firstItem);
         List<Enchantment> secondItemCustomEnc = getCustomEnchantments(secondItem);
-        List<String> firstExtraLore = new ArrayList<>();
 
         // Get the extra lore just for the first item
+        List<String> firstExtraLore = new ArrayList<>();
         if (firstItem.hasItemMeta() && firstItem.getItemMeta().hasLore()) {
             firstExtraLore = getLoreWithNoCustomEnchantments(firstItem.getItemMeta().getLore(), firstItemCustomEnc);
         }
@@ -232,10 +232,9 @@ public class CustomEnchants implements Listener {
                 }
             }
         }
-
-
     }
 
+    // Custom Enchantments effects
     @EventHandler()
     public void onBlockBreak(BlockBreakEvent event) {
         if (event.getPlayer().getInventory().getItemInMainHand() == null)
