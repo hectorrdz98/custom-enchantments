@@ -12,4 +12,10 @@ commands:
   Telepathy_book:
     description: Get Telepathy book
     usage: /<command>
+  JumpBack:
+    description: Get JumpBack bow
+    usage: /<command>
+  JumpBack_book:
+    description: Get JumpBack book
+    usage: /<command>
 

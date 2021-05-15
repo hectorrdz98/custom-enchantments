@@ -1,9 +1,11 @@
 package me.sasukector.custom_enchantments;
 
+import me.sasukector.custom_enchantments.enchants.JumpBack;
 import me.sasukector.custom_enchantments.enchants.Telepathy;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.block.Container;
 import org.bukkit.enchantments.Enchantment;
@@ -11,10 +13,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.inventory.PrepareAnvilEvent;
 import org.bukkit.inventory.AnvilInventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.util.Vector;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -26,16 +30,24 @@ import java.util.stream.Collectors;
 public class CustomEnchants implements Listener {
 
     public static final Enchantment TELEPATHY = new Telepathy("telepathy");
+    public static final Enchantment JUMPBACK = new JumpBack("jumpback");
     public List<Enchantment> customEnchantments = new ArrayList<>();
 
     public CustomEnchants() {
         this.customEnchantments.add(TELEPATHY);
+        this.customEnchantments.add(JUMPBACK);
     }
 
     public static void register() {
-        boolean registered = Arrays.stream(Enchantment.values()).collect(Collectors.toList()).contains(TELEPATHY);
-        if (!registered)
-            registerEnchantment(TELEPATHY);
+        List<Enchantment> registerEnc = new ArrayList<>();
+        registerEnc.add(TELEPATHY);
+        registerEnc.add(JUMPBACK);
+
+        for (Enchantment enc : registerEnc) {
+            if (!Arrays.stream(Enchantment.values()).collect(Collectors.toList()).contains(enc)) {
+                registerEnchantment(enc);
+            }
+        }
     }
 
     public static void registerEnchantment(Enchantment enchantment) {
@@ -254,6 +266,21 @@ public class CustomEnchants implements Listener {
                         return;
                     player.getInventory().addItem(drops.iterator().next());
                 }
+            }
+        }
+    }
+
+    @EventHandler()
+    public void onBowShoot(EntityShootBowEvent event) {
+        if (event.getEntity() instanceof Player) {
+            Player player = (Player) event.getEntity();
+            ItemStack bow = event.getBow();
+            if (!bow.hasItemMeta())
+                return;
+            if (bow.getItemMeta().hasEnchant(CustomEnchants.JUMPBACK) && player.isOnGround()) {
+                player.playSound(player.getLocation(), Sound.ENTITY_PHANTOM_FLAP, 1, 2);
+                Vector direction = player.getLocation().getDirection().multiply(1.5);
+                player.setVelocity(new Vector(-direction.getX(), 0.5, -direction.getZ()));
             }
         }
     }

@@ -79,6 +79,55 @@ public final class CustomEnchantments extends JavaPlugin implements Listener {
             return true;
         }
 
+        if (label.equalsIgnoreCase("jumpback")) {
+            if (!(sender instanceof Player))
+                return true;
+            Player player = (Player) sender;
+
+            if (player.isOp()) {
+                ItemStack item = new ItemStack(Material.BOW);
+                item.addUnsafeEnchantment(CustomEnchants.JUMPBACK, 1);
+                item.addUnsafeEnchantment(Enchantment.DURABILITY, 3);
+
+                ItemMeta meta = item.getItemMeta();
+                List<String> lore = new ArrayList<String>();
+                lore.add(ChatColor.GOLD + "JumpBack");
+                if (meta.hasLore())
+                    for (String l : meta.getLore())
+                        lore.add(l);
+                meta.setLore(lore);
+                item.setItemMeta(meta);
+
+                player.getInventory().addItem(item);
+
+                item = new ItemStack(Material.ARROW);
+                player.getInventory().addItem(item);
+            }
+
+            return true;
+        }
+
+        if (label.equalsIgnoreCase("jumpback_book")) {
+            if (!(sender instanceof Player))
+                return true;
+            Player player = (Player) sender;
+
+            if (player.isOp()) {
+                ItemStack item = new ItemStack(Material.ENCHANTED_BOOK);
+                ItemMeta meta = item.getItemMeta();
+                EnchantmentStorageMeta emeta = (EnchantmentStorageMeta) item.getItemMeta();
+                emeta.addStoredEnchant(CustomEnchants.JUMPBACK, 1, false);
+                List<String> lore = new ArrayList<String>();
+                lore.add(ChatColor.GOLD + "JumpBack");
+                meta.setLore(lore);
+                item.setItemMeta(meta);
+
+                player.getInventory().addItem(item);
+            }
+
+            return true;
+        }
+
         return true;
     }
 }
